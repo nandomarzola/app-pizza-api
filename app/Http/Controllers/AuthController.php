@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
 use Illuminate\Http\Request;
+use App\Supports\RoleSupport;
 use App\Repositories\UserRepository;
-use App\Exceptions\ExceptionHandler;
 
 class AuthController extends Controller
 {
@@ -22,51 +21,40 @@ class AuthController extends Controller
     public function __construct(UserRepository $repository)
     {
         $this->repository = $repository;
-        $this->middleware('auth:api', ['except' => ['register','login']]);
     }
 
     /**
-     * Register an user on the database and return its JWT Token
-     *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws ExceptionHandler
+     * @throws \Prettus\Validator\Exceptions\ValidatorException
      */
     public function register (Request $request)
     {
-        try {
-            // Get data and encrypt password
-            $data = $request->all();
-            $rawPassword = $data['password'];
-            $data['password'] = bcrypt($data['password']);
+        // Get data and encrypt password
+        $data = $request->validate([
+            'name' => 'required|max:255',
+            'email' => 'required|unique:users|email|max:255',
+            'password' => 'required|min:6|max:255'
+        ]);
 
-            // Verify if the email is being used
-            $userExists = $this->repository->findByField('email', $data['email']);
-            if ($userExists) {
-                return response()->json(
-                    ['message' => 'An user with the provided email already exists'],
-                    400
-                );
-            }
+        $rawPassword = $data['password'];
+        $data['password'] = bcrypt($data['password']);
+        $data['role_id'] = RoleSupport::USER_ROLE;
 
-            // Create user
-            $user = $this->repository->create($data);
+        // Create user
+        $user = $this->repository->create($data);
 
-            // Return the user login to get its JWT Token
-            return $this->login(
-                [
-                    'email' => $user->email,
-                    'password' => $rawPassword,
-                ]
-            );
-        } catch (Exception $exception) {
-            throw new ExceptionHandler($exception->getMessage());
-        }
+        // Return the user login to get its JWT Token
+        return $this->login(
+            [
+                'email' => $user->email,
+                'password' => $rawPassword,
+                'role_id' => $user->role_id
+            ]
+        );
     }
 
     /**
-     * Get a JWT via given credentials.
-     *
      * @param array $credentials
      * @return \Illuminate\Http\JsonResponse
      */
@@ -74,12 +62,7 @@ class AuthController extends Controller
     {
         $credentials = !empty($credentials) ? $credentials : request(['email', 'password']);
 
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(
-                ['error' => 'Unauthorized or no credentials provided'],
-                401
-            );
-        }
+        $token = auth()->attempt($credentials);
 
         return $this->respondWithToken($token);
     }

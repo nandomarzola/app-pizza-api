@@ -2,8 +2,10 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
 {
@@ -40,16 +42,28 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * Render an exception into an HTTP response.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Throwable  $exception
-     * @return \Symfony\Component\HttpFoundation\Response
-     *
-     * @throws \Throwable
+     * @param \Illuminate\Http\Request $request
+     * @param Throwable $exception
+     * @return \Illuminate\Http\JsonResponse
      */
     public function render($request, Throwable $exception)
     {
-        return parent::render($request, $exception);
+        $message = $exception->getMessage() ? $exception->getMessage() : "An internal error occurred";
+        $code = $exception->getCode() ? $exception->getCode() : 500;
+        $errors = [];
+
+        if ($exception instanceof ModelNotFoundException) {
+            $message = "No register found with the provided data";
+        }
+
+        if ($exception instanceof ValidationException) {
+            $errors = $exception->errors();
+        }
+
+        return response()->json([
+            'message' => $message,
+            'code' => $code,
+            'errors' => $errors
+        ], $code);
     }
 }
