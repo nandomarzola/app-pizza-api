@@ -22,6 +22,9 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'auth' ], function ($router) {
     Route::post('me', 'AuthController@me');
 });
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::fallback(function () {
+    return response()->json(
+        [ 'message' => 'Page Not Found. If this error persists, contact: dev.mathiusso@gmail.com' ],
+        404
+    );
 });
