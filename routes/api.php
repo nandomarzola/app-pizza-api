@@ -47,6 +47,17 @@ Route::group([ 'middleware' => 'api'], function ($router) {
             Route::delete('{id}', 'IngredientController@destroy');
         });
     });
+
+    Route::group([ 'prefix' => 'pizzas' ], function ($router) {
+        Route::get('', 'PizzaController@fetch');
+        Route::get('{id}', 'PizzaController@fetchOne');
+
+        Route::group(['middleware' => ['auth.jwt', 'auth.admin']], function() {
+            Route::post('', 'PizzaController@store');
+            Route::put('{id}', 'PizzaController@update');
+            Route::delete('{id}', 'PizzaController@destroy');
+        });
+    });
 });
 
 Route::fallback(function () {

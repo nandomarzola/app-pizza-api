@@ -23,7 +23,7 @@ class IngredientController extends CrudController
         $this->pluralAlias = 'ingredients';
         $this->validationRules = [
             'name' => "required|max:255|unique:{$this->pluralAlias}",
-            'price' => 'required|numeric|regex:/^[0-9]+(\.[0-9][0-9]?)?$/'
+            'price' => 'required|numeric|regex:/^[0-9]+(\.[0-9][0-9]?)?$/|between:0,9999.99'
         ];
     }
 }
