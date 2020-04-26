@@ -21,5 +21,8 @@ class CategoryController extends CrudController
         $this->repository = $repository;
         $this->singularAlias = 'category';
         $this->pluralAlias = 'categories';
+        $this->validationRules = [
+            'name' => "required|max:255|unique:{$this->pluralAlias}"
+        ];
     }
 }

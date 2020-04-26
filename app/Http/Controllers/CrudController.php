@@ -26,6 +26,11 @@ abstract class CrudController extends Controller
     protected $pluralAlias = 'data';
 
     /**
+     * @var array
+     */
+    protected $validationRules = [];
+
+    /**
      * @param Request $request
      * @return JsonResponse
      */
@@ -58,9 +63,7 @@ abstract class CrudController extends Controller
     public function store(Request $request)
     {
         // Validate data
-        $data = $request->validate([
-            'name' => "required|max:255|unique:{$this->pluralAlias}"
-        ]);
+        $data = $request->validate($this->validationRules);
 
         // Create register
         $data = $this->repository->create($data);
@@ -79,10 +82,20 @@ abstract class CrudController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $this->repository->find($id);
+
+        // Workaround to avoid unique field validation on update
+        $validationRules = [];
+        foreach ($this->validationRules as $key => $rules) {
+            if (strstr($rules, 'unique:')) {
+                $rules .= ",$key,$id";
+            }
+
+            $validationRules[$key] = $rules;
+        }
+
         // Validate data
-        $data = $request->validate([
-            'name' => "required|max:255|unique:{$this->pluralAlias},name," . $id
-        ]);
+        $data = $request->validate($validationRules);
 
         // Update register
         $data = $this->repository->update($data, $id);
@@ -95,6 +108,8 @@ abstract class CrudController extends Controller
 
     public function destroy(Request $request, string $id)
     {
+        $this->repository->find($id);
+
         // Delete register
         $this->repository->delete($id);
 

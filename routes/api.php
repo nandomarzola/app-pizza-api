@@ -36,6 +36,17 @@ Route::group([ 'middleware' => 'api'], function ($router) {
             Route::delete('{id}', 'CategoryController@destroy');
         });
     });
+
+    Route::group([ 'prefix' => 'ingredients' ], function ($router) {
+        Route::get('', 'IngredientController@fetch');
+        Route::get('{id}', 'IngredientController@fetchOne');
+
+        Route::group(['middleware' => ['auth.jwt', 'auth.admin']], function() {
+            Route::post('', 'IngredientController@store');
+            Route::put('{id}', 'IngredientController@update');
+            Route::delete('{id}', 'IngredientController@destroy');
+        });
+    });
 });
 
 Route::fallback(function () {
