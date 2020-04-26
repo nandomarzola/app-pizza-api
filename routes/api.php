@@ -25,6 +25,17 @@ Route::group([ 'middleware' => 'api'], function ($router) {
             Route::post('me', 'AuthController@me');
         });
     });
+
+    Route::group([ 'prefix' => 'categories' ], function ($router) {
+        Route::get('', 'CategoryController@fetch');
+        Route::get('{id}', 'CategoryController@fetchOne');
+
+        Route::group(['middleware' => ['auth.jwt', 'auth.admin']], function() {
+            Route::post('', 'CategoryController@store');
+            Route::put('{id}', 'CategoryController@update');
+            Route::delete('{id}', 'CategoryController@destroy');
+        });
+    });
 });
 
 Route::fallback(function () {
