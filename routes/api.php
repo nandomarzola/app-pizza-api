@@ -14,17 +14,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group([ 'middleware' => 'api', 'prefix' => 'auth' ], function ($router) {
-    Route::post('register', 'AuthController@register');
-    Route::post('login', 'AuthController@login');
-    Route::post('logout', 'AuthController@logout');
-    Route::post('refresh', 'AuthController@refresh');
-    Route::post('me', 'AuthController@me');
+Route::group([ 'middleware' => 'api'], function ($router) {
+    Route::group([ 'prefix' => 'auth' ], function ($router) {
+        Route::post('register', 'AuthController@register');
+        Route::post('login', 'AuthController@login');
+
+        Route::group(['middleware' => 'auth.jwt'], function() {
+            Route::post('logout', 'AuthController@logout');
+            Route::post('refresh', 'AuthController@refresh');
+            Route::post('me', 'AuthController@me');
+        });
+    });
 });
 
 Route::fallback(function () {
-    return response()->json(
-        [ 'message' => 'Page Not Found. If this error persists, contact: dev.mathiusso@gmail.com' ],
+    throw new Error(
+        'Page Not Found. If this error persists, contact: dev.mathiusso@gmail.com',
         404
     );
 });
