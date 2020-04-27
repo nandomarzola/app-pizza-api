@@ -61,7 +61,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Get the user that owns the phone.
+     * Get the user role
      */
     public function role()
     {

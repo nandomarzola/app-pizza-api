@@ -58,6 +58,16 @@ Route::group([ 'middleware' => 'api'], function ($router) {
             Route::delete('{id}', 'PizzaController@destroy');
         });
     });
+
+    Route::group([ 'prefix' => 'pizza-ingredients' ], function ($router) {
+        Route::get('', 'PizzaIngredientController@fetch');
+        Route::get('{id}', 'PizzaIngredientController@fetchOne');
+
+        Route::group(['middleware' => ['auth.jwt', 'auth.admin']], function() {
+            Route::post('', 'PizzaIngredientController@store');
+            Route::delete('{id}', 'PizzaIngredientController@destroy');
+        });
+    });
 });
 
 Route::fallback(function () {
