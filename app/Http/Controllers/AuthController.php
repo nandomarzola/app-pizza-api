@@ -30,13 +30,14 @@ class AuthController extends Controller
      */
     public function register (Request $request)
     {
-        // Get data and encrypt password
+        // Validate data
         $data = $request->validate([
             'name' => 'required|max:255',
             'email' => 'required|unique:users|email|max:255',
             'password' => 'required|min:6|max:255'
         ]);
 
+        // Get data and encrypt password
         $rawPassword = $data['password'];
         $data['password'] = bcrypt($data['password']);
         $data['role_id'] = RoleSupport::USER_ROLE;
