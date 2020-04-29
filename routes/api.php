@@ -23,6 +23,7 @@ Route::group([ 'middleware' => 'api'], function ($router) {
             Route::post('logout', 'AuthController@logout');
             Route::post('refresh', 'AuthController@refresh');
             Route::post('me', 'AuthController@me');
+            Route::get('address', 'AddressController@myAddress');
         });
     });
 
@@ -77,6 +78,17 @@ Route::group([ 'middleware' => 'api'], function ($router) {
             Route::post('', 'PaymentMethodController@store');
             Route::put('{id}', 'PaymentMethodController@update');
             Route::delete('{id}', 'PaymentMethodController@destroy');
+        });
+    });
+
+    Route::group([ 'prefix' => 'addresses' ], function ($router) {
+        Route::get('', 'AddressController@fetch');
+        Route::get('{id}', 'AddressController@fetchOne');
+        Route::post('', 'AddressController@store');
+        Route::put('{id}', 'AddressController@update');
+
+        Route::group(['middleware' => ['auth.jwt', 'auth.admin']], function() {
+            Route::delete('{id}', 'AddressController@destroy');
         });
     });
 });
