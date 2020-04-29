@@ -68,6 +68,17 @@ Route::group([ 'middleware' => 'api'], function ($router) {
             Route::delete('{id}', 'PizzaIngredientController@destroy');
         });
     });
+
+    Route::group([ 'prefix' => 'payment-methods' ], function ($router) {
+        Route::get('', 'PaymentMethodController@fetch');
+        Route::get('{id}', 'PaymentMethodController@fetchOne');
+
+        Route::group(['middleware' => ['auth.jwt', 'auth.admin']], function() {
+            Route::post('', 'PaymentMethodController@store');
+            Route::put('{id}', 'PaymentMethodController@update');
+            Route::delete('{id}', 'PaymentMethodController@destroy');
+        });
+    });
 });
 
 Route::fallback(function () {

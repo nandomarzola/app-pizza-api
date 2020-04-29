@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class PizzaIngredient extends Authenticatable
@@ -21,16 +22,20 @@ class PizzaIngredient extends Authenticatable
 
     /**
      * Get the pizza
+     *
+     * @return BelongsTo
      */
-    public function pizza()
+    public function pizza(): BelongsTo
     {
         return $this->belongsTo(Pizza::class);
     }
 
     /**
      * Get the ingredient
+     *
+     * @return BelongsTo
      */
-    public function ingredient()
+    public function ingredient(): BelongsTo
     {
         return $this->belongsTo(Ingredient::class);
     }

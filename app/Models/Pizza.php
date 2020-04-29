@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Container\Container;
 use Illuminate\Notifications\Notifiable;
 use App\Repositories\PizzaIngredientRepository;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Pizza extends Authenticatable
@@ -33,13 +34,19 @@ class Pizza extends Authenticatable
 
     /**
      * Get the pizza's category
+     *
+     * @return BelongsTo
      */
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function getIngredientsAttribute() {
+    /**
+     * @return array
+     */
+    public function getIngredientsAttribute(): array
+    {
         $pizzaIngredientRepository = new PizzaIngredientRepository(Container::getInstance());
 
         $ingredients = $pizzaIngredientRepository->with(['ingredient'])->findWhere(
