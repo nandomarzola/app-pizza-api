@@ -31,12 +31,23 @@ abstract class CrudController extends Controller
     protected $validationRules = [];
 
     /**
+     * @var array
+     */
+    protected $queryWith = [];
+
+    /**
      * @param Request $request
      * @return JsonResponse
      */
     public function fetch(Request $request)
     {
-        $data = $this->repository->all();
+        $repository = $this->repository;
+
+        if ($this->queryWith) {
+            $repository = $repository->with($this->queryWith);
+        }
+
+        $data = $repository->all();
         return response()->json([
             "{$this->pluralAlias}" => $data
         ]);

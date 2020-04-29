@@ -6,7 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class PizzaIngredient extends Authenticatable
+class Address extends Authenticatable
 {
     use Notifiable;
 
@@ -16,27 +16,22 @@ class PizzaIngredient extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'pizza_id',
-        'ingredient_id'
+        'user_id',
+        'street',
+        'number',
+        'complement',
+        'city',
+        'state',
+        'zip_code',
     ];
 
     /**
-     * Get the pizza
+     * Get the address user
      *
      * @return BelongsTo
      */
-    public function pizza(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Pizza::class);
-    }
-
-    /**
-     * Get the ingredient
-     *
-     * @return BelongsTo
-     */
-    public function ingredient(): BelongsTo
-    {
-        return $this->belongsTo(Ingredient::class);
+        return $this->belongsTo(User::class);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements JWTSubject
@@ -19,7 +20,8 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-        'role_id'
+        'role_id',
+        'phone_number',
     ];
 
     /**
@@ -62,8 +64,9 @@ class User extends Authenticatable implements JWTSubject
 
     /**
      * Get the user role
+     * @return BelongsTo
      */
-    public function role()
+    public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class);
     }

@@ -54,6 +54,7 @@ class Handler extends ExceptionHandler
 
         if ($exception instanceof ModelNotFoundException) {
             $message = "No register found with the provided data";
+            $code = 404;
         }
 
         if ($exception instanceof ValidationException) {

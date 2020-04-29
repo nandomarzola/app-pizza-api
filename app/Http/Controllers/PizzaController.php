@@ -28,5 +28,6 @@ class PizzaController extends CrudController
             'picture' => 'nullable|max:255',
             'category_id' => 'required|exists:App\Models\Category,id'
         ];
+        $this->queryWith = ['category'];
     }
 }
