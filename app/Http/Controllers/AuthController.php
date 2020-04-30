@@ -33,36 +33,50 @@ class AuthController extends Controller
         // Validate data
         $data = $request->validate([
             'name' => 'required|max:255',
-            'email' => 'required|unique:users|email|max:255',
-            'password' => 'required|min:6|max:255',
+            'email' => 'required|email|max:255',
+            'password' => 'nullable|min:6|max:255',
             'phone_number' => 'nullable|max:255'
         ]);
 
-        // Get data and encrypt password
-        $rawPassword = $data['password'];
-        $data['password'] = bcrypt($data['password']);
-        $data['role_id'] = RoleSupport::USER_ROLE;
+        $user = $this->repository->findByField('email', $data['email'])->first();
 
-        // Create user
-        $user = $this->repository->create($data);
+        if (!$user) {
+            // Get data and encrypt password
+            if (!is_null($data['password'])) {
+                $data['password'] = bcrypt($data['password']);
+            }
 
-        // Return the user login to get its JWT Token
-        return $this->login(
-            [
-                'email' => $user->email,
-                'password' => $rawPassword,
-                'role_id' => $user->role_id
-            ]
-        );
+            $data['role_id'] = RoleSupport::USER_ROLE;
+
+            // Create user
+            $user = $this->repository->create($data);
+        }
+
+        // Return user
+        return response()->json([
+            'user' => $user->toArray()
+        ]);
     }
 
     /**
-     * @param array $credentials
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(array $credentials = [])
+    public function login()
     {
-        $credentials = !empty($credentials) ? $credentials : request(['email', 'password']);
+        $credentials = request(['email', 'password']);
+
+        if (is_null($credentials['password'])) {
+            return response()->json(['message' => 'Password not defined yet.'], 400);
+        }
+
+        $user = $this->repository->findByField('email', $credentials['email'])->first();
+
+        if ($user && !$user->password) {
+            $this->repository->update(
+                ['password' => bcrypt($credentials['password'])],
+                $user->id
+            );
+        }
 
         $token = auth()->attempt($credentials);
 

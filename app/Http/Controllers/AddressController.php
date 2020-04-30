@@ -33,6 +33,29 @@ class AddressController extends CrudController
     }
 
     /**
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Prettus\Validator\Exceptions\ValidatorException
+     */
+    public function store(\Illuminate\Http\Request $request)
+    {
+        // Validate data
+        $data = $request->validate($this->validationRules);
+
+        $address = $this->repository->findByField('user_id', $data['user_id'])->first();
+
+        if (!$address) {
+            // Create address
+            $address = $this->repository->create($data);
+        }
+
+        // Return the address
+        return response()->json([
+            "{$this->singularAlias}" => $address->toArray()
+        ]);
+    }
+
+    /**
      * @return \Illuminate\Http\JsonResponse
      */
     public function myAddress()
