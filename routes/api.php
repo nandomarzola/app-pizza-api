@@ -23,7 +23,8 @@ Route::group([ 'middleware' => 'api'], function ($router) {
             Route::post('logout', 'AuthController@logout');
             Route::post('refresh', 'AuthController@refresh');
             Route::post('me', 'AuthController@me');
-            Route::get('address', 'AddressController@myAddress');
+            Route::post('address', 'AddressController@myAddress');
+            Route::post('orders', 'OrderController@myOrders');
         });
     });
 
@@ -82,13 +83,27 @@ Route::group([ 'middleware' => 'api'], function ($router) {
     });
 
     Route::group([ 'prefix' => 'addresses' ], function ($router) {
-        Route::get('', 'AddressController@fetch');
-        Route::get('{id}', 'AddressController@fetchOne');
         Route::post('', 'AddressController@store');
-        Route::put('{id}', 'AddressController@update');
+
+        Route::group(['middleware' => ['auth.jwt']], function(){
+            Route::put('{id}', 'AddressController@update');
+
+            Route::group(['middleware' => ['auth.admin']], function() {
+                Route::get('', 'AddressController@fetch');
+                Route::get('{id}', 'AddressController@fetchOne');
+                Route::delete('{id}', 'AddressController@destroy');
+            });
+        });
+    });
+
+    Route::group([ 'prefix' => 'orders' ], function ($router) {
+        Route::post('', 'OrderController@store');
 
         Route::group(['middleware' => ['auth.jwt', 'auth.admin']], function() {
-            Route::delete('{id}', 'AddressController@destroy');
+            Route::get('', 'OrderController@fetch');
+            Route::get('{id}', 'OrderController@fetchOne');
+            Route::put('{id}', 'OrderController@update');
+            Route::delete('{id}', 'OrderController@destroy');
         });
     });
 });
