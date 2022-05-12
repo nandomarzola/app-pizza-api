@@ -110,7 +110,7 @@ Route::group([ 'middleware' => 'api'], function ($router) {
 
 Route::fallback(function () {
     throw new Error(
-        'Page Not Found. If this error persists, contact: dev.mathiusso@gmail.com',
+        'Page Not Found. If this error persists, contact: nandomarzola1@gmail.com',
         404
     );
 });
