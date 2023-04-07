@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Supports\RoleSupport;
 use App\Repositories\UserRepository;
-
+use App\Repositories\RoleRepository;
+use App\Repositories\PersonRepository;
+use App\Repositories\AddressRepository;
 class AuthController extends Controller
 {
     /**
@@ -18,9 +20,12 @@ class AuthController extends Controller
      * @param UserRepository $repository
      * @return void
      */
-    public function __construct(UserRepository $repository)
+    public function __construct(UserRepository $repository, RoleRepository $roleRepository, PersonRepository $personRepository, AddressRepository $addressRepository)
     {
         $this->repository = $repository;
+        $this->roleRepository = $roleRepository;
+        $this->personRepository = $personRepository;
+        $this->addressRepository = $addressRepository;
     }
 
     /**
@@ -90,7 +95,22 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user());
+        $data = auth()->user();
+
+        $role_id = auth()->user()->role_id;
+        $role = $this->roleRepository->findByField('id', $role_id)->first()->toArray();
+
+        $person_id = auth()->user()->person_id;
+        $person = $this->personRepository->findByField('id', $person_id)->first()->toArray();
+
+        $address_id = auth()->user()->address_id;
+        $address = $this->addressRepository->findByField('id', $address_id)->first()->toArray();
+
+        $data['role'] = $role['name'];
+        $data['person'] = $person;
+        $data['address'] = $address;
+
+        return response()->json($data);
     }
 
     /**

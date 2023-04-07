@@ -21,8 +21,8 @@ class RoleSeeder extends Seeder
         ]);
 
         DB::table('roles')->insert([
-            'id' => RoleSupport::USER_ROLE,
-            'name' => 'user',
+            'id' => RoleSupport::CUSTOMER_ROLE,
+            'name' => 'customer',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ]);

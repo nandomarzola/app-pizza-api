@@ -2,15 +2,15 @@
 
 namespace App\Repositories;
 
-use App\Models\OrderItem;
+use App\Models\Person;
 
-class OrderItemRepository extends BaseRepository
+class PersonRepository extends BaseRepository
 {
     /**
      * @return string
      */
     function model()
     {
-        return OrderItem::class;
+        return Person::class;
     }
 }

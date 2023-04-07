@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Category extends Authenticatable
+class Person extends Authenticatable
 {
     use Notifiable;
+    protected $table = 'persons';
 
     /**
      * The attributes that are mass assignable.
@@ -15,6 +16,12 @@ class Category extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name'
+        'first_name',
+        'last_name',
+        'cpf',
+        'cnpj',
+        'rg',
+        'ie',
+        'telephone'
     ];
 }
